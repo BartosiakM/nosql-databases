@@ -1,32 +1,35 @@
 package com.rental.model;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.persistence.*;
+
+import org.bson.codecs.pojo.annotations.BsonCreator;
+import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.codecs.pojo.annotations.BsonProperty;
+
 import java.io.Serializable;
+import java.util.UUID;
 
-@Entity
-@Table(name = "Client")
-@Access(AccessType.FIELD)
-public class Client extends AbstractEntity implements Serializable {
+public class Client implements Serializable {
 
-    @Column(name = "username")
-    @NotNull
+    @BsonId
+    private final UUID id;
+
+    @BsonProperty("username")
     private String username;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "client_type_id", referencedColumnName = "id")
+    @BsonProperty("clientType")
     private ClientType clientType;
 
-    @Column
     private int activeRents;
 
-    public Client(String username, ClientType clientType) {
+    @BsonCreator
+    public Client(@BsonId UUID id,
+                  @BsonProperty("username") String username,
+                  @BsonProperty("clientType") ClientType clientType) {
+        this.id = id == null ? UUID.randomUUID() : id;
         this.username = username;
         this.clientType = clientType;
         this.activeRents = 0;
     }
-
-    public Client() {}
 
     public ClientType getClientType() {
         return clientType;
@@ -48,7 +51,7 @@ public class Client extends AbstractEntity implements Serializable {
         this.username = username;
     }
 
-    public Long getClientId() {
+    public UUID getClientId() {
         return this.id;
     }
 

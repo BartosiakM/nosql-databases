@@ -1,32 +1,38 @@
 package com.rental.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import org.bson.codecs.pojo.annotations.BsonCreator;
+import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.codecs.pojo.annotations.BsonProperty;
+
 import java.io.Serializable;
+import java.util.UUID;
 
-@Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@Access(AccessType.FIELD)
-public abstract class Vehicle extends AbstractEntity implements Serializable {
+@BsonDiscriminator(key = "vehicle_type")
+public abstract class Vehicle implements Serializable {
 
-    @Column(name = "plateNumber")
-    @NotNull
+    @BsonId
+    private UUID id;
+
+    @BsonProperty("plateNumber")
     private String plateNumber;
 
-    @Column(name = "basePrice")
+    @BsonProperty("basePrice")
     private int basePrice;
 
-    @Column(name = "available")
+    @BsonProperty("available")
     private boolean available = true;
 
-    public Vehicle(String plateNumber, int basePrice) {
+    @BsonCreator
+    public Vehicle(@BsonId UUID id,
+                   @BsonProperty("plateNumber") String plateNumber,
+                   @BsonProperty("basePrice") int basePrice) {
+        this.id = id == null ? UUID.randomUUID() : id;
         this.plateNumber = plateNumber;
         this.basePrice = basePrice;
     }
 
-    public Vehicle() {}
-
-    public Long getVehicleId() {
+    public UUID getVehicleId() {
         return this.id;
     }
 

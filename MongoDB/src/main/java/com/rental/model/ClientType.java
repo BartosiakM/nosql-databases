@@ -1,11 +1,10 @@
 package com.rental.model;
 
-import jakarta.persistence.*;
 
-@Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "client_type", discriminatorType = DiscriminatorType.STRING)
-public abstract class ClientType extends AbstractEntity {
+import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+
+@BsonDiscriminator(key = "_type")
+public abstract class ClientType{
 
     public abstract int getMaxVehicles();
 

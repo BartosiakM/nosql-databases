@@ -1,88 +1,52 @@
 package com.rental.repository;
 
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import com.rental.model.Vehicle;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.Persistence;
-import jakarta.persistence.TypedQuery;
+import org.bson.conversions.Bson;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-public class VehicleRepository implements Repository<Vehicle> {
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.set;
 
-    private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("NBDUnit");
+public class VehicleRepository extends AbstractMongoRepository {
 
-    @Override
-    public Vehicle getByID(Long ID) {
-        try (EntityManager em = emf.createEntityManager()) {
-            return em.find(Vehicle.class, ID);
-        }
+    // Dodawanie nowego pojazdu
+    public void add(Vehicle vehicle) {
+        getDatabase().getCollection("vehicles", Vehicle.class).insertOne(vehicle);
     }
 
-    @Override
+    // Znajdowanie pojazdu po ID
+    public Optional<Vehicle> findById(UUID id) {
+        return Optional.ofNullable(getDatabase().getCollection("vehicles", Vehicle.class)
+                .find(eq("_id", id)).first());
+    }
+
+    // Znajdowanie wszystkich pojazdów
     public List<Vehicle> findAll() {
-        try (EntityManager em = emf.createEntityManager()) {
-            TypedQuery<Vehicle> query = em.createQuery("SELECT v FROM Vehicle v", Vehicle.class);
-            return query.getResultList();
-        }
+        List<Vehicle> vehicles = new ArrayList<>();
+        getDatabase().getCollection("vehicles", Vehicle.class).find().into(vehicles);
+        return vehicles;
     }
 
-    @Override
-    public Vehicle add(Vehicle vehicle) {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction transaction = em.getTransaction();
-        try {
-            transaction.begin();
-            em.persist(vehicle);
-            transaction.commit();
-            return vehicle;
-        } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-            throw e;
-        } finally {
-            em.close();
-        }
-    }
-
-    @Override
-    public void remove(Vehicle vehicle) {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction transaction = em.getTransaction();
-        try {
-            transaction.begin();
-            Vehicle attachedVehicle = em.find(Vehicle.class, vehicle.getVehicleId());
-            if (attachedVehicle != null) {
-                em.remove(attachedVehicle);
-            }
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-            throw e;
-        } finally {
-            em.close();
-        }
-    }
-
-    @Override
+    // Aktualizacja informacji o pojeździe
     public void update(Vehicle vehicle) {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction transaction = em.getTransaction();
-        try {
-            transaction.begin();
-            em.merge(vehicle);
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-            throw e;
-        } finally {
-            em.close();
-        }
+        Bson updates = Updates.combine(
+                set("plateNumber", vehicle.getPlateNumber()),
+                set("basePrice", vehicle.getBasePrice()),
+                set("available", vehicle.isAvailable())
+        );
+
+        getDatabase().getCollection("vehicles", Vehicle.class)
+                .updateOne(eq("_id", vehicle.getVehicleId()), updates);
+    }
+
+    // Usuwanie pojazdu po ID
+    public void delete(UUID id) {
+        getDatabase().getCollection("vehicles", Vehicle.class).deleteOne(eq("_id", id));
     }
 }
