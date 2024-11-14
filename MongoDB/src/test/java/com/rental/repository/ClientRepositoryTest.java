@@ -1,94 +1,106 @@
 package com.rental.repository;
 
+import com.rental.model.BronzeClientType;
 import com.rental.model.Client;
 import com.rental.model.ClientType;
-import com.rental.model.DiamondClientType;
-import com.rental.model.GoldClientType;
+import com.rental.model.DefaultClientType;
 import org.junit.jupiter.api.*;
-import jakarta.persistence.*;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ClientRepositoryTest {
 
-    private static EntityManagerFactory emf;
-    private EntityManager em;
     private ClientRepository clientRepository;
 
-    @BeforeAll
-    public static void init() {
-        emf = Persistence.createEntityManagerFactory("NBDUnit");
+    @BeforeEach
+    public void setup() {
+        // Inicjalizacja ClientRepository przed każdym testem
+        clientRepository = new ClientRepository();
     }
 
-    @BeforeEach
-    public void setUp() {
-        em = emf.createEntityManager();
-        clientRepository = new ClientRepository();
+    @AfterEach
+    public void cleanup() {
+        // Czyszczenie kolekcji po każdym teście
+        clientRepository.getDatabase().getCollection("clients").deleteMany(new org.bson.Document());
     }
 
     @Test
     public void testAddClient() {
-        ClientType type = new GoldClientType();
-        Client client = new Client("Joe Doe", type);
+        ClientType type = new BronzeClientType();
+        Client client = new Client(UUID.randomUUID(), "JohnDoe", type);
 
-        Client addedClient = clientRepository.add(client);
+        Client result = clientRepository.add(client);
 
-        assert(addedClient.getClientId() != null);
-        assertEquals("Joe Doe", addedClient.getUsername());
+        assertNotNull(result);
+        Optional<Client> foundClient = clientRepository.findById(client.getClientId());
+        assertTrue(foundClient.isPresent());
+        assertEquals(client.getClientId(), foundClient.get().getClientId());
     }
 
     @Test
-    public void testGetByID() {
-        ClientType type = new GoldClientType();
-        Client client = new Client("Joe Doe", type);
-
+    public void testFindById() {
+        ClientType type = new BronzeClientType();
+        Client client = new Client(UUID.randomUUID(), "JaneDoe", type);
         clientRepository.add(client);
 
-        Client foundClient = clientRepository.getByID(client.getClientId());
-        assertNotNull(foundClient);
-        assertEquals("Joe Doe", foundClient.getUsername());
+        Optional<Client> result = clientRepository.findById(client.getClientId());
+
+        assertTrue(result.isPresent());
+        assertEquals(client.getUsername(), result.get().getUsername());
+    }
+
+    @Test
+    public void testFindByIdNotFound() {
+        UUID randomId = UUID.randomUUID();
+
+        Optional<Client> result = clientRepository.findById(randomId);
+
+        assertFalse(result.isPresent());
     }
 
     @Test
     public void testFindAll() {
-        ClientType type1 = new GoldClientType();
-        ClientType type2 = new DiamondClientType();
-        Client client1 = new Client("Joe Doe", type1);
-        Client client2 = new Client("John Doeski", type2);
+        Client client1 = new Client(UUID.randomUUID(), "Alice", new BronzeClientType());
+        Client client2 = new Client(UUID.randomUUID(), "Bob", new DefaultClientType());
 
         clientRepository.add(client1);
         clientRepository.add(client2);
 
-        List<Client> clients = clientRepository.findAll();
-        assertFalse(clients.isEmpty(), "Clients list should not be empty.");
-        assertEquals(2, clients.size());
-    }
+        List<Client> result = clientRepository.findAll();
 
-    @Test
-    public void testRemoveClient() {
-        ClientType type = new GoldClientType();
-        Client client = new Client("Joe Doe", type);
-
-        clientRepository.add(client);
-        clientRepository.remove(client);
-
-        Client removedClient = clientRepository.getByID(client.getClientId());
-        assertNull(removedClient, "Client should be removed from the database.");
+        assertEquals(2, result.size());
+        assertEquals("Alice", result.get(0).getUsername());
+        assertEquals("Bob", result.get(1).getUsername());
     }
 
     @Test
     public void testUpdateClient() {
-        ClientType type = new GoldClientType();
-        Client client = new Client("Joe Doe", type);
-
+        ClientType type1 = new BronzeClientType();
+        Client client = new Client(UUID.randomUUID(), "Alice", type1);
         clientRepository.add(client);
-        client.setUsername("Johnny");
+
+        client.setUsername("AliceUpdated");
+
         clientRepository.update(client);
 
-        Client updatedClient = clientRepository.getByID(client.getClientId());
-        assertEquals("Johnny", updatedClient.getUsername());
+        Optional<Client> updatedClient = clientRepository.findById(client.getClientId());
+
+        assertTrue(updatedClient.isPresent());
+        assertEquals("AliceUpdated", updatedClient.get().getUsername());
+    }
+
+    @Test
+    public void testDeleteClient() {
+        Client client = new Client(UUID.randomUUID(), "Charlie", new BronzeClientType());
+        clientRepository.add(client);
+
+        clientRepository.delete(client.getClientId());
+
+        Optional<Client> deletedClient = clientRepository.findById(client.getClientId());
+
+        assertFalse(deletedClient.isPresent());
     }
 }

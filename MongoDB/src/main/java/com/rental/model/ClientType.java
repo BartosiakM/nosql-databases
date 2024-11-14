@@ -3,7 +3,7 @@ package com.rental.model;
 
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 
-@BsonDiscriminator(key = "_type")
+@BsonDiscriminator(key = "ClientType")
 public abstract class ClientType{
 
     public abstract int getMaxVehicles();

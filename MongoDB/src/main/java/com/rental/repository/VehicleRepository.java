@@ -1,6 +1,6 @@
 package com.rental.repository;
 
-import com.mongodb.client.model.Filters;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Updates;
 import com.rental.model.Vehicle;
 import org.bson.conversions.Bson;
@@ -15,21 +15,28 @@ import static com.mongodb.client.model.Updates.set;
 
 public class VehicleRepository extends AbstractMongoRepository {
 
+    private final MongoCollection<Vehicle> vehicleCollection;
+
+    // Inicjalizacja kolekcji w konstruktorze
+    public VehicleRepository() {
+        this.vehicleCollection = getDatabase().getCollection("vehicles", Vehicle.class);
+    }
+
     // Dodawanie nowego pojazdu
-    public void add(Vehicle vehicle) {
-        getDatabase().getCollection("vehicles", Vehicle.class).insertOne(vehicle);
+    public Vehicle add(Vehicle vehicle) {
+        vehicleCollection.insertOne(vehicle);
+        return vehicle;
     }
 
     // Znajdowanie pojazdu po ID
     public Optional<Vehicle> findById(UUID id) {
-        return Optional.ofNullable(getDatabase().getCollection("vehicles", Vehicle.class)
-                .find(eq("_id", id)).first());
+        return Optional.ofNullable(vehicleCollection.find(eq("id", id)).first());
     }
 
     // Znajdowanie wszystkich pojazdów
     public List<Vehicle> findAll() {
         List<Vehicle> vehicles = new ArrayList<>();
-        getDatabase().getCollection("vehicles", Vehicle.class).find().into(vehicles);
+        vehicleCollection.find().into(vehicles);
         return vehicles;
     }
 
@@ -40,13 +47,11 @@ public class VehicleRepository extends AbstractMongoRepository {
                 set("basePrice", vehicle.getBasePrice()),
                 set("available", vehicle.isAvailable())
         );
-
-        getDatabase().getCollection("vehicles", Vehicle.class)
-                .updateOne(eq("_id", vehicle.getVehicleId()), updates);
+        vehicleCollection.updateOne(eq("id", vehicle.getVehicleId()), updates);
     }
 
     // Usuwanie pojazdu po ID
     public void delete(UUID id) {
-        getDatabase().getCollection("vehicles", Vehicle.class).deleteOne(eq("_id", id));
+        vehicleCollection.deleteOne(eq("id", id));
     }
 }

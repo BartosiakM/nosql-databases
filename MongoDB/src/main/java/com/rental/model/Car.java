@@ -1,31 +1,37 @@
 package com.rental.model;
 
-import jakarta.persistence.*;
+import org.bson.codecs.pojo.annotations.BsonCreator;
+import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 
-@Entity
-@Access(AccessType.FIELD)
-@DiscriminatorValue("Car")
+import java.util.UUID;
+
+@BsonDiscriminator(key = "vehicleType", value = "car")
 public class Car extends Vehicle {
 
-    @Column(name="engine_displacement")
+    @BsonProperty("engineDisplacement")
     private int engineDisplacement;
 
-    @Column(name = "segment")
+    @BsonProperty("segment")
     private String segment;
 
-    public Car(String plateNumber, int basePrice, int engineDisplacement, String segment) {
-        super(plateNumber, basePrice);
+    @BsonCreator
+    public Car(@BsonId UUID id,
+               @BsonProperty("plateNumber") String plateNumber,
+               @BsonProperty("basePrice") int basePrice,
+               @BsonProperty("engineDisplacement") int engineDisplacement,
+               @BsonProperty("segment") String segment) {
+        super(id, plateNumber, basePrice);
         this.engineDisplacement = engineDisplacement;
         this.segment = segment;
-    }
-
-    public Car() {
-        super("", 0);
     }
 
     public String getSegment() {
         return segment;
     }
+
+    public int getEngineDisplacement() { return this.engineDisplacement; }
 
     public void setSegment(String segment) {
         this.segment = segment;

@@ -1,10 +1,9 @@
 package com.rental.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.DiscriminatorValue;
 
-@Entity
-@DiscriminatorValue("GOLD")
+import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+
+@BsonDiscriminator(key = "ClientType", value = "gold")
 public class GoldClientType extends ClientType {
 
     @Override

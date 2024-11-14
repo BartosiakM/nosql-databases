@@ -16,7 +16,7 @@ services:
       - MONGO_INITDB_DATABASE=rental
     command: --config /etc/mongod.conf --port 27017
     healthcheck:
-      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--port", "27017"]
       interval: 10s
       timeout: 2s
       retries: 5
@@ -32,14 +32,14 @@ services:
     networks:
       - mongonet
     ports:
-      - "27018:27017"
+      - "27018:27018"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=nbd
       - MONGO_INITDB_ROOT_PASSWORD=nbdpassword
       - MONGO_INITDB_DATABASE=rental
-    command: --config /etc/mongod.conf --port 27017
+    command: --config /etc/mongod.conf --port 27018
     healthcheck:
-      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--port", "27018" ]
       interval: 10s
       timeout: 2s
       retries: 5
@@ -55,14 +55,14 @@ services:
     networks:
       - mongonet
     ports:
-      - "27019:27017"
+      - "27019:27019"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=nbd
       - MONGO_INITDB_ROOT_PASSWORD=nbdpassword
       - MONGO_INITDB_DATABASE=rental
-    command: --config /etc/mongod.conf --port 27017
+    command: --config /etc/mongod.conf --port 27019
     healthcheck:
-      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--port", "27019" ]
       interval: 10s
       timeout: 2s
       retries: 5
@@ -85,7 +85,7 @@ services:
       mongo_3:
         condition: service_healthy
     command: >
-      mongosh --host mongodb1:27017 --username admin --password adminpassword --authenticationDatabase admin --eval '
+      mongosh --host mongodb1:27017 --username nbd --password nbdpassword --authenticationDatabase admin --eval '
       rs.initiate(
         {
           _id: "replica_set_single",

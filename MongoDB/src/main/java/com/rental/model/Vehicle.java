@@ -8,7 +8,7 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 import java.io.Serializable;
 import java.util.UUID;
 
-@BsonDiscriminator(key = "vehicle_type")
+@BsonDiscriminator(key = "vehicleType")
 public abstract class Vehicle implements Serializable {
 
     @BsonId

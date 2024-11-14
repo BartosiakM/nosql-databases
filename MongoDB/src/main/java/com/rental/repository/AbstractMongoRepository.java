@@ -6,6 +6,8 @@ import com.mongodb.MongoCredential;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import com.rental.model.ClientTypeCodec;
+import com.rental.model.VehicleCodec;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -17,8 +19,7 @@ import java.util.List;
 public abstract class AbstractMongoRepository implements AutoCloseable {
 
     private ConnectionString connectionString = new ConnectionString(
-            "mongodb://mongodb1:27017,mongodb2:27018,mongodb3:27019/" +
-                    "?replicaSet=replica_set_single");
+            "mongodb://mongodb1:27017,mongodb2:27018,mongodb3:27019/?replicaSet=replica_set_single");
 
     private MongoCredential credential = MongoCredential.createCredential(
             "nbd", "admin", "nbdpassword".toCharArray());
@@ -34,12 +35,17 @@ public abstract class AbstractMongoRepository implements AutoCloseable {
     private MongoDatabase database;
 
     private void initDbConnection() {
+        CodecRegistry customCodecs = CodecRegistries.fromCodecs(
+                new VehicleCodec(MongoClientSettings.getDefaultCodecRegistry()),
+                new ClientTypeCodec(MongoClientSettings.getDefaultCodecRegistry())
+        );
+
         MongoClientSettings settings = MongoClientSettings.builder()
                 .credential(credential)
                 .applyConnectionString(connectionString)
                 .uuidRepresentation(UuidRepresentation.STANDARD)
                 .codecRegistry(CodecRegistries.fromRegistries(
-                        CodecRegistries.fromProviders(new UniqueIdCodecProvider()),
+                        customCodecs,
                         MongoClientSettings.getDefaultCodecRegistry(),
                         pojoCodecRegistry
                 ))

@@ -1,22 +1,25 @@
 package com.rental.model;
 
-import jakarta.persistence.*;
+import org.bson.codecs.pojo.annotations.BsonCreator;
+import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 
-@Entity
-@Access(AccessType.FIELD)
-@DiscriminatorValue("MotorVehicle")
+import java.util.UUID;
+
+@BsonDiscriminator(key = "vehicleType", value = "motorVehicle")
 public class MotorVehicle extends Vehicle {
 
-    @Column(name="engine_displacement")
+    @BsonProperty("engineDisplacement")
     private int engineDisplacement;
 
-    public MotorVehicle(String plateNumber, int basePrice, int engineDisplacement) {
-        super(plateNumber, basePrice);
+    @BsonCreator
+    public MotorVehicle(@BsonId UUID id,
+                        @BsonProperty("plateNumber") String plateNumber,
+                        @BsonProperty("basePrice") int basePrice,
+                        @BsonProperty("engineDisplacement") int engineDisplacement) {
+        super(id, plateNumber, basePrice);
         this.engineDisplacement = engineDisplacement;
-    }
-
-    public MotorVehicle() {
-        super("", 0);
     }
 
     public int getEngineDisplacement() {

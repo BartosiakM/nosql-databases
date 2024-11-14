@@ -1,6 +1,6 @@
 package com.rental.repository;
 
-import com.mongodb.client.model.Filters;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Updates;
 import com.rental.model.Client;
 
@@ -14,28 +14,35 @@ import static com.mongodb.client.model.Updates.set;
 
 public class ClientRepository extends AbstractMongoRepository {
 
+    private final MongoCollection<Client> clientCollection;
+
+    // Inicjalizacja kolekcji w konstruktorze
+    public ClientRepository() {
+        this.clientCollection = getDatabase().getCollection("clients", Client.class);
+    }
+
     // Dodawanie nowego klienta
-    public void add(Client client) {
-        getDatabase().getCollection("clients", Client.class).insertOne(client);
+    public Client add(Client client) {
+        clientCollection.insertOne(client);
+        return client;
     }
 
     // Znajdowanie klienta po ID
     public Optional<Client> findById(UUID id) {
-        return Optional.ofNullable(getDatabase().getCollection("clients", Client.class)
-                .find(eq("_id", id)).first());
+        return Optional.ofNullable(clientCollection.find(eq("id", id)).first());
     }
 
     // Znajdowanie wszystkich klientów
     public List<Client> findAll() {
         List<Client> clients = new ArrayList<>();
-        getDatabase().getCollection("clients", Client.class).find().into(clients);
+        clientCollection.find().into(clients);
         return clients;
     }
 
     // Aktualizacja informacji o kliencie
     public void update(Client client) {
-        getDatabase().getCollection("clients", Client.class).updateOne(
-                eq("_id", client.getClientId()),
+        clientCollection.updateOne(
+                eq("id", client.getClientId()),
                 Updates.combine(
                         set("firstName", client.getUsername()),
                         set("clientType", client.getClientType())
@@ -45,6 +52,6 @@ public class ClientRepository extends AbstractMongoRepository {
 
     // Usuwanie klienta po ID
     public void delete(UUID id) {
-        getDatabase().getCollection("clients", Client.class).deleteOne(eq("_id", id));
+        clientCollection.deleteOne(eq("id", id));
     }
 }

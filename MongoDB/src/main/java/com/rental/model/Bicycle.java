@@ -1,19 +1,22 @@
 package com.rental.model;
 
-import jakarta.persistence.*;
+import org.bson.codecs.pojo.annotations.BsonCreator;
+import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 
-@Entity
-@Access(AccessType.FIELD)
-@DiscriminatorValue("Bicycle")
+import java.util.UUID;
+
+@BsonDiscriminator(key = "vehicleType", value = "bicycle")
 public class Bicycle extends Vehicle {
 
-    public Bicycle(String plateNumber, int basePrice) {
-        super(plateNumber, basePrice);
+    @BsonCreator
+    public Bicycle(@BsonId UUID id,
+                   @BsonProperty("plateNumber") String plateNumber,
+                   @BsonProperty("basePrice") int basePrice) {
+        super(id, plateNumber, basePrice);
     }
 
-    public Bicycle() {
-        super("", 0);
-    }
 
     @Override
     public double getActualRentalPrice() {

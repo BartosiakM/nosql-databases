@@ -3,6 +3,8 @@ package com.rental.manager;
 import com.rental.model.Vehicle;
 import com.rental.repository.VehicleRepository;
 
+import java.util.UUID;
+
 public class VehicleManager {
     private final VehicleRepository vehicleRepository;
 
@@ -13,12 +15,12 @@ public class VehicleManager {
         this.vehicleRepository = vehicleRepository;
     }
 
-    public void removeVehicle(Long ID) {
-        vehicleRepository.remove(vehicleRepository.getByID(ID));
+    public void removeVehicle(UUID ID) {
+        vehicleRepository.delete(ID);
     }
 
     public Vehicle addVehicle(Vehicle vehicle) {
-        if (vehicleRepository.getByID(vehicle.getVehicleId()) != null) {
+        if (vehicleRepository.findById(vehicle.getVehicleId()).isPresent()) {
             throw new IllegalArgumentException("vehicle already exists");
         }
         return vehicleRepository.add(vehicle);

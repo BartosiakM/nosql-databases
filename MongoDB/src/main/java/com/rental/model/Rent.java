@@ -1,44 +1,46 @@
 package com.rental.model;
 
-import jakarta.persistence.*;
+
+import org.bson.codecs.pojo.annotations.BsonCreator;
+import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.codecs.pojo.annotations.BsonProperty;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import jakarta.validation.constraints.NotNull;
+import java.util.UUID;
 
-@Entity
-@Table(name = "Rent")
-@Access(AccessType.FIELD)
-public class Rent extends AbstractEntity implements Serializable {
+public class Rent implements Serializable {
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
-    @JoinColumn
-    @NotNull
+    @BsonId
+    private UUID id;
+
+    @BsonProperty("client")
     private Client client;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
-    @JoinColumn
-    @NotNull
+    @BsonProperty("vehicle")
     private Vehicle vehicle;
 
-    @Column(name = "begine_time")
+    @BsonProperty("beginTime")
     private LocalDateTime beginTime;
 
-    @Column(name = "end_time")
+    @BsonProperty("endTime")
     private LocalDateTime endTime;
 
-    @Column(name = "rent_cost")
+    @BsonProperty("rentCost")
     private double rentCost = 0.0;
 
-    @Column(name = "archive")
-    private boolean isArchive = false;
+    @BsonProperty("archive")
+    private boolean archive = false;
 
-    public Rent(Client client, Vehicle vehicle) {
+    @BsonCreator
+    public Rent(@BsonId UUID id,
+                @BsonProperty("client") Client client,
+                @BsonProperty("vehicle") Vehicle vehicle) {
+        this.id = id;
         this.client = client;
         this.vehicle = vehicle;
         this.beginTime = LocalDateTime.now();
     }
-
-    public Rent() {}
 
     public Client getClient() {
         return client;
@@ -48,7 +50,7 @@ public class Rent extends AbstractEntity implements Serializable {
         return vehicle;
     }
 
-    public long getRentId() {
+    public UUID getRentId() {
         return this.id;
     }
 
@@ -70,7 +72,7 @@ public class Rent extends AbstractEntity implements Serializable {
             throw new IllegalStateException("Rent has already ended");
         }
         this.endTime = LocalDateTime.now();
-        this.isArchive = true;
+        this.archive = true;
         this.vehicle.setAvailable(true);
         this.client.setActiveRents(client.getActiveRents() - 1);
         this.rentCost = client.applyDiscount(getRentDays() * vehicle.getActualRentalPrice());
