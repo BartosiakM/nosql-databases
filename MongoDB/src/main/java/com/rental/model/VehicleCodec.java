@@ -6,7 +6,6 @@ import org.bson.codecs.Codec;
 import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.bson.codecs.configuration.CodecRegistry;
-import java.util.UUID;
 
 public class VehicleCodec implements Codec<Vehicle> {
 
@@ -20,14 +19,14 @@ public class VehicleCodec implements Codec<Vehicle> {
     public void encode(BsonWriter writer, Vehicle vehicle, EncoderContext encoderContext) {
         writer.writeStartDocument();
 
-        // Pole wspólne dla wszystkich typów pojazdów
+        // Common field for all vehicle types
+        writer.writeInt64("_id", vehicle.getId());
         writer.writeString("vehicleType", vehicle.getClass().getSimpleName().toLowerCase());
-        writer.writeString("_id", vehicle.getVehicleId().toString());
         writer.writeString("plateNumber", vehicle.getPlateNumber());
         writer.writeInt32("basePrice", vehicle.getBasePrice());
-        writer.writeBoolean("available", vehicle.isAvailable());
+        writer.writeInt32("available", vehicle.isAvailable());
 
-        // Pola specyficzne dla podklas
+        // Fields specific to subclasses
         if (vehicle instanceof Car) {
             Car car = (Car) vehicle;
             writer.writeInt32("engineDisplacement", car.getEngineDisplacement());
@@ -43,12 +42,11 @@ public class VehicleCodec implements Codec<Vehicle> {
     @Override
     public Vehicle decode(BsonReader reader, DecoderContext decoderContext) {
         reader.readStartDocument();
+        long id = reader.readInt64("_id");
         String vehicleType = reader.readString("vehicleType");
-
-        UUID id = UUID.fromString(reader.readString("_id"));
         String plateNumber = reader.readString("plateNumber");
         int basePrice = reader.readInt32("basePrice");
-        boolean available = reader.readBoolean("available");
+        int available = reader.readInt32("available");
 
         Vehicle vehicle;
         switch (vehicleType) {

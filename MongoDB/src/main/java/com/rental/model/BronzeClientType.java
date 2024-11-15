@@ -3,7 +3,7 @@ package com.rental.model;
 
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 
-@BsonDiscriminator(key = "ClientType", value = "bronze")
+@BsonDiscriminator(key = "type", value = "bronze")
 public class BronzeClientType extends ClientType {
     @Override
     public int getMaxVehicles() {

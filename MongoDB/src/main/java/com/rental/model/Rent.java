@@ -7,12 +7,11 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 public class Rent implements Serializable {
 
     @BsonId
-    private UUID id;
+    private long id;
 
     @BsonProperty("client")
     private Client client;
@@ -33,7 +32,7 @@ public class Rent implements Serializable {
     private boolean archive = false;
 
     @BsonCreator
-    public Rent(@BsonId UUID id,
+    public Rent(@BsonId long id,
                 @BsonProperty("client") Client client,
                 @BsonProperty("vehicle") Vehicle vehicle) {
         this.id = id;
@@ -50,7 +49,7 @@ public class Rent implements Serializable {
         return vehicle;
     }
 
-    public UUID getRentId() {
+    public long getId() {
         return this.id;
     }
 
@@ -73,12 +72,12 @@ public class Rent implements Serializable {
         }
         this.endTime = LocalDateTime.now();
         this.archive = true;
-        this.vehicle.setAvailable(true);
-        this.client.setActiveRents(client.getActiveRents() - 1);
         this.rentCost = client.applyDiscount(getRentDays() * vehicle.getActualRentalPrice());
     }
 
     public double getRentCost() {
         return rentCost;
     }
+
+    public boolean isArchive() { return archive; }
 }

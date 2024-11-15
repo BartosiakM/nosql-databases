@@ -19,13 +19,13 @@ public class ClientTypeCodec implements Codec<ClientType> {
     public void encode(BsonWriter writer, ClientType clientType, EncoderContext encoderContext) {
         writer.writeStartDocument();
         if (clientType instanceof DefaultClientType) {
-            writer.writeString("ClientType", "default");
+            writer.writeString("type", "default");
         } else if (clientType instanceof BronzeClientType) {
-            writer.writeString("ClientType", "bronze");
+            writer.writeString("type", "bronze");
         } else if (clientType instanceof DiamondClientType) {
-            writer.writeString("ClientType", "diamond");
+            writer.writeString("type", "diamond");
         } else if (clientType instanceof GoldClientType) {
-            writer.writeString("ClientType", "gold");
+            writer.writeString("type", "gold");
         }
         writer.writeEndDocument();
     }
@@ -33,7 +33,7 @@ public class ClientTypeCodec implements Codec<ClientType> {
     @Override
     public ClientType decode(BsonReader reader, DecoderContext decoderContext) {
         reader.readStartDocument();
-        String clientTypeValue = reader.readString("ClientType");
+        String clientTypeValue = reader.readString("type");
         ClientType clientType;
         switch (clientTypeValue) {
             case "bronze":

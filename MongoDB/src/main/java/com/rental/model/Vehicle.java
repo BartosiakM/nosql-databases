@@ -6,13 +6,12 @@ import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 @BsonDiscriminator(key = "vehicleType")
 public abstract class Vehicle implements Serializable {
 
     @BsonId
-    private UUID id;
+    private long id;
 
     @BsonProperty("plateNumber")
     private String plateNumber;
@@ -21,18 +20,18 @@ public abstract class Vehicle implements Serializable {
     private int basePrice;
 
     @BsonProperty("available")
-    private boolean available = true;
+    private int available = 0;
 
     @BsonCreator
-    public Vehicle(@BsonId UUID id,
+    public Vehicle(@BsonId long id,
                    @BsonProperty("plateNumber") String plateNumber,
                    @BsonProperty("basePrice") int basePrice) {
-        this.id = id == null ? UUID.randomUUID() : id;
+        this.id = id;
         this.plateNumber = plateNumber;
         this.basePrice = basePrice;
     }
 
-    public UUID getVehicleId() {
+    public long getId() {
         return this.id;
     }
 
@@ -50,11 +49,9 @@ public abstract class Vehicle implements Serializable {
 
     public abstract double getActualRentalPrice();
 
-    public boolean isAvailable() {
+    public int isAvailable() {
         return available;
     }
 
-    public void setAvailable(boolean available) {
-        this.available = available;
-    }
+    public void setAvailable(int available) { this.available = available;}
 }

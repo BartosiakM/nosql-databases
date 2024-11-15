@@ -14,7 +14,7 @@ public class MotorVehicle extends Vehicle {
     private int engineDisplacement;
 
     @BsonCreator
-    public MotorVehicle(@BsonId UUID id,
+    public MotorVehicle(@BsonProperty("id") long id,
                         @BsonProperty("plateNumber") String plateNumber,
                         @BsonProperty("basePrice") int basePrice,
                         @BsonProperty("engineDisplacement") int engineDisplacement) {

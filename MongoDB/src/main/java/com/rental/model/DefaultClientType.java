@@ -3,7 +3,7 @@ package com.rental.model;
 
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 
-@BsonDiscriminator(key = "ClientType", value = "default")
+@BsonDiscriminator(key = "type", value = "default")
 public class DefaultClientType extends ClientType {
 
     @Override

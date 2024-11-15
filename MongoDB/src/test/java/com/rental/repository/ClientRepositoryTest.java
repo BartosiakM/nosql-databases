@@ -1,13 +1,8 @@
 package com.rental.repository;
 
-import com.rental.model.BronzeClientType;
-import com.rental.model.Client;
-import com.rental.model.ClientType;
-import com.rental.model.DefaultClientType;
+import com.rental.model.*;
 import org.junit.jupiter.api.*;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,47 +19,46 @@ public class ClientRepositoryTest {
     @AfterEach
     public void cleanup() {
         // Czyszczenie kolekcji po każdym teście
-        clientRepository.getDatabase().getCollection("clients").deleteMany(new org.bson.Document());
+        clientRepository.getDatabase().getCollection("clients", Client.class).deleteMany(new org.bson.Document());
     }
 
     @Test
     public void testAddClient() {
         ClientType type = new BronzeClientType();
-        Client client = new Client(UUID.randomUUID(), "JohnDoe", type);
+        Client client = new Client(123, "JohnDoe", type);
 
         Client result = clientRepository.add(client);
 
         assertNotNull(result);
-        Optional<Client> foundClient = clientRepository.findById(client.getClientId());
-        assertTrue(foundClient.isPresent());
-        assertEquals(client.getClientId(), foundClient.get().getClientId());
+        System.out.println(result.getId());
+        Client foundClient = clientRepository.findById(client.getId());
+        assertEquals(client.getId(), foundClient.getId());
     }
 
     @Test
     public void testFindById() {
         ClientType type = new BronzeClientType();
-        Client client = new Client(UUID.randomUUID(), "JaneDoe", type);
+        Client client = new Client(1, "JaneDoe", type);
         clientRepository.add(client);
 
-        Optional<Client> result = clientRepository.findById(client.getClientId());
+        Client result = clientRepository.findById(client.getId());
 
-        assertTrue(result.isPresent());
-        assertEquals(client.getUsername(), result.get().getUsername());
+        assertEquals(client.getUsername(), result.getUsername());
     }
 
     @Test
     public void testFindByIdNotFound() {
-        UUID randomId = UUID.randomUUID();
+        long randomId = 11111111;
 
-        Optional<Client> result = clientRepository.findById(randomId);
+        Client result = clientRepository.findById(randomId);
 
-        assertFalse(result.isPresent());
+        assertNull(result);
     }
 
     @Test
     public void testFindAll() {
-        Client client1 = new Client(UUID.randomUUID(), "Alice", new BronzeClientType());
-        Client client2 = new Client(UUID.randomUUID(), "Bob", new DefaultClientType());
+        Client client1 = new Client(2, "Alice", new BronzeClientType());
+        Client client2 = new Client(3, "Bob", new DefaultClientType());
 
         clientRepository.add(client1);
         clientRepository.add(client2);
@@ -78,29 +72,27 @@ public class ClientRepositoryTest {
 
     @Test
     public void testUpdateClient() {
-        ClientType type1 = new BronzeClientType();
-        Client client = new Client(UUID.randomUUID(), "Alice", type1);
+        ClientType type1 = new DiamondClientType();
+        Client client = new Client(4, "Alice", type1);
         clientRepository.add(client);
 
         client.setUsername("AliceUpdated");
-
         clientRepository.update(client);
 
-        Optional<Client> updatedClient = clientRepository.findById(client.getClientId());
+        Client updatedClient = clientRepository.findById(client.getId());
 
-        assertTrue(updatedClient.isPresent());
-        assertEquals("AliceUpdated", updatedClient.get().getUsername());
+        assertEquals("AliceUpdated", updatedClient.getUsername());
     }
 
     @Test
     public void testDeleteClient() {
-        Client client = new Client(UUID.randomUUID(), "Charlie", new BronzeClientType());
+        Client client = new Client(5, "Charlie", new BronzeClientType());
         clientRepository.add(client);
 
-        clientRepository.delete(client.getClientId());
+        clientRepository.delete(client.getId());
 
-        Optional<Client> deletedClient = clientRepository.findById(client.getClientId());
+        Client deletedClient = clientRepository.findById(client.getId());
 
-        assertFalse(deletedClient.isPresent());
+        assertNull(deletedClient);
     }
 }

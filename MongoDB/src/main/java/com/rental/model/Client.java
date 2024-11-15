@@ -11,21 +11,22 @@ import java.util.UUID;
 public class Client implements Serializable {
 
     @BsonId
-    private final UUID id;
+    private long id;
 
     @BsonProperty("username")
     private String username;
 
-    @BsonProperty("clientType")
+    @BsonProperty("type")
     private ClientType clientType;
 
+    @BsonProperty("activeRents")
     private int activeRents;
 
     @BsonCreator
-    public Client(@BsonId UUID id,
+    public Client(@BsonId long id,
                   @BsonProperty("username") String username,
-                  @BsonProperty("clientType") ClientType clientType) {
-        this.id = id == null ? UUID.randomUUID() : id;
+                  @BsonProperty("type") ClientType clientType) {
+        this.id = id;
         this.username = username;
         this.clientType = clientType;
         this.activeRents = 0;
@@ -51,7 +52,7 @@ public class Client implements Serializable {
         this.username = username;
     }
 
-    public UUID getClientId() {
+    public long getId() {
         return this.id;
     }
 

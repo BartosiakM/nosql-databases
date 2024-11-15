@@ -5,8 +5,6 @@ import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
-import java.util.UUID;
-
 @BsonDiscriminator(key = "vehicleType", value = "car")
 public class Car extends Vehicle {
 
@@ -17,7 +15,7 @@ public class Car extends Vehicle {
     private String segment;
 
     @BsonCreator
-    public Car(@BsonId UUID id,
+    public Car(@BsonProperty("id") long id,
                @BsonProperty("plateNumber") String plateNumber,
                @BsonProperty("basePrice") int basePrice,
                @BsonProperty("engineDisplacement") int engineDisplacement,

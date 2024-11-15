@@ -11,7 +11,7 @@ import java.util.UUID;
 public class Bicycle extends Vehicle {
 
     @BsonCreator
-    public Bicycle(@BsonId UUID id,
+    public Bicycle(@BsonProperty("id") long id,
                    @BsonProperty("plateNumber") String plateNumber,
                    @BsonProperty("basePrice") int basePrice) {
         super(id, plateNumber, basePrice);
