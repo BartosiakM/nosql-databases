@@ -12,13 +12,11 @@ public class ClientRepositoryTest {
 
     @BeforeEach
     public void setup() {
-        // Inicjalizacja ClientRepository przed każdym testem
         clientRepository = new ClientRepository();
     }
 
     @AfterEach
     public void cleanup() {
-        // Czyszczenie kolekcji po każdym teście
         clientRepository.getDatabase().getCollection("clients", Client.class).deleteMany(new org.bson.Document());
     }
 

@@ -19,14 +19,12 @@ public class VehicleCodec implements Codec<Vehicle> {
     public void encode(BsonWriter writer, Vehicle vehicle, EncoderContext encoderContext) {
         writer.writeStartDocument();
 
-        // Common field for all vehicle types
         writer.writeInt64("_id", vehicle.getId());
         writer.writeString("vehicleType", vehicle.getClass().getSimpleName().toLowerCase());
         writer.writeString("plateNumber", vehicle.getPlateNumber());
         writer.writeInt32("basePrice", vehicle.getBasePrice());
         writer.writeInt32("available", vehicle.isAvailable());
 
-        // Fields specific to subclasses
         if (vehicle instanceof Car) {
             Car car = (Car) vehicle;
             writer.writeInt32("engineDisplacement", car.getEngineDisplacement());

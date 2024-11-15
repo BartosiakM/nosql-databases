@@ -23,7 +23,6 @@ public class RentRepositoryTest {
 
     @AfterEach
     public void cleanup() {
-        // Clear the collections after each test
         rentRepository.getDatabase().getCollection("rents",Rent.class).deleteMany(new org.bson.Document());
         clientRepository.getDatabase().getCollection("clients", Client.class).deleteMany(new org.bson.Document());
         vehicleRepository.getDatabase().getCollection("vehicles", Vehicle.class).deleteMany(new org.bson.Document());

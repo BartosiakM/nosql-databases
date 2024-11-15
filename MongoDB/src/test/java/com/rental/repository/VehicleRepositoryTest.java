@@ -6,8 +6,6 @@ import com.rental.model.Bicycle;
 import com.rental.model.MotorVehicle;
 import org.junit.jupiter.api.*;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,7 +20,6 @@ public class VehicleRepositoryTest {
 
     @AfterEach
     public void cleanup() {
-        // Czyszczenie kolekcji "vehicles" po każdym teście
         vehicleRepository.getDatabase().getCollection("vehicles").deleteMany(new org.bson.Document());
     }
 

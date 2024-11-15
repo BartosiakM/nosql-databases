@@ -6,7 +6,6 @@ import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 public class Client implements Serializable {
 

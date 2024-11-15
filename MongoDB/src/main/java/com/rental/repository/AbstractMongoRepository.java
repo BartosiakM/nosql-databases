@@ -71,48 +71,36 @@ public abstract class AbstractMongoRepository implements AutoCloseable {
     public void createClientCollection() {
         MongoDatabase db = getDatabase();
 
-        // Check if the collection already exists
         boolean collectionExists = db.listCollectionNames()
                 .into(new ArrayList<>())
                 .contains("clients");
 
         if (!collectionExists) {
-            // Define schema validation for the 'clients' collection
             ValidationOptions validationOptions = new ValidationOptions().validator(
                     new Document("$jsonSchema", new Document()
                             .append("bsonType", "object")
                             .append("required", List.of("_id", "username", "type", "activeRents"))
                             .append("properties", new Document()
-                                    .append("_id", new Document("bsonType", "long")
-                                            .append("description", "must be a unique long identifier"))
-                                    .append("username", new Document("bsonType", "string")
-                                            .append("description", "must be a string and is required"))
+                                    .append("_id", new Document("bsonType", "long"))
+                                    .append("username", new Document("bsonType", "string"))
                                     .append("clientType", new Document("bsonType", "object")
-                                            .append("description", "must be an embedded document for client type")
                                             .append("properties", new Document()
-                                                    .append("type", new Document("bsonType", "string")
-                                                            .append("description", "type of client, e.g., 'gold', 'silver', 'default'"))))
-                                    .append("activeRents", new Document("bsonType", "int")
-                                            .append("description", "number of active rents, must be an integer"))
+                                                    .append("type", new Document("bsonType", "string"))))
+                                    .append("activeRents", new Document("bsonType", "int"))
                             )
-                            // Conditional validation on 'activeRents' based on 'clientType.type'
                             .append("oneOf", List.of(
-                                    // Condition for 'gold' client type
                                     new Document("properties", new Document("type",
                                             new Document("properties", new Document("type", new Document("enum", List.of("gold"))))
                                     ).append("activeRents", new Document("maximum", 4))),
 
-                                    // Condition for 'diamond' client type
                                     new Document("properties", new Document("type",
                                             new Document("properties", new Document("type", new Document("enum", List.of("diamond"))))
                                     ).append("activeRents", new Document("maximum", 10))),
 
-                                    // Condition for 'default' client type
                                     new Document("properties", new Document("type",
                                             new Document("properties", new Document("type", new Document("enum", List.of("default"))))
                                     ).append("activeRents", new Document("maximum", 1))),
 
-                                    // Condition for 'bronze' client type
                                     new Document("properties", new Document("type",
                                             new Document("properties", new Document("type", new Document("enum", List.of("bronze"))))
                                     ).append("activeRents", new Document("maximum", 2)))
@@ -123,7 +111,6 @@ public abstract class AbstractMongoRepository implements AutoCloseable {
             ).validationAction(ValidationAction.ERROR)
                     .validationLevel(ValidationLevel.STRICT);
 
-            // Create the 'clients' collection with the validation options
             db.createCollection("clients", new CreateCollectionOptions().validationOptions(validationOptions));
         }
     }
