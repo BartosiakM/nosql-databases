@@ -1,6 +1,11 @@
 package com.rental.repository;
 
 
+import redis.clients.jedis.DefaultJedisClientConfig;
+import redis.clients.jedis.HostAndPort;
+import redis.clients.jedis.JedisClientConfig;
+import redis.clients.jedis.JedisPooled;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;

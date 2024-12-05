@@ -1,5 +1,7 @@
 package com.rental.model;
 
+import jakarta.json.bind.annotation.JsonbCreator;
+import jakarta.json.bind.annotation.JsonbProperty;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonProperty;
@@ -10,9 +12,10 @@ import java.util.UUID;
 public class Bicycle extends Vehicle {
 
     @BsonCreator
-    public Bicycle(@BsonProperty("id") long id,
-                   @BsonProperty("plateNumber") String plateNumber,
-                   @BsonProperty("basePrice") int basePrice) {
+    @JsonbCreator
+    public Bicycle(@BsonProperty("id") @JsonbProperty("vehicleId") long id,
+                   @BsonProperty("plateNumber") @JsonbProperty("plateNumber") String plateNumber,
+                   @BsonProperty("basePrice") @JsonbProperty("basePrice") int basePrice) {
         super(id, plateNumber, basePrice);
     }
 

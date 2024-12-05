@@ -1,5 +1,7 @@
 package com.rental.model;
 
+import jakarta.json.bind.annotation.JsonbCreator;
+import jakarta.json.bind.annotation.JsonbProperty;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonProperty;
@@ -8,17 +10,20 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 public class Car extends Vehicle {
 
     @BsonProperty("engineDisplacement")
+    @JsonbProperty("engineDisplacement")
     private int engineDisplacement;
 
     @BsonProperty("segment")
+    @JsonbProperty("segment")
     private String segment;
 
     @BsonCreator
-    public Car(@BsonProperty("id") long id,
-               @BsonProperty("plateNumber") String plateNumber,
-               @BsonProperty("basePrice") int basePrice,
-               @BsonProperty("engineDisplacement") int engineDisplacement,
-               @BsonProperty("segment") String segment) {
+    @JsonbCreator
+    public Car(@BsonProperty("id") @JsonbProperty("vehicleId")long id,
+               @BsonProperty("plateNumber") @JsonbProperty("plateNumber") String plateNumber,
+               @BsonProperty("basePrice") @JsonbProperty("basePrice") int basePrice,
+               @BsonProperty("engineDisplacement") @JsonbProperty("engineDisplacement") int engineDisplacement,
+               @BsonProperty("segment") @JsonbProperty("segment") String segment) {
         super(id, plateNumber, basePrice);
         this.engineDisplacement = engineDisplacement;
         this.segment = segment;
