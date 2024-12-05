@@ -10,12 +10,12 @@ import java.util.List;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
 
-public class VehicleRepository extends AbstractMongoRepository {
+public class MongoVehicleRepository extends AbstractMongoRepository implements IRepository {
 
     private final MongoCollection<Vehicle> vehicleCollection;
 
 
-    public VehicleRepository() {
+    public MongoVehicleRepository() {
         this.vehicleCollection = getDatabase().getCollection("vehicles", Vehicle.class);
     }
 

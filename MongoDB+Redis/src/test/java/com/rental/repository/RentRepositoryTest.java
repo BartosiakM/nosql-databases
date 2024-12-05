@@ -12,13 +12,13 @@ public class RentRepositoryTest {
 
     private RentRepository rentRepository;
     private ClientRepository clientRepository;
-    private VehicleRepository vehicleRepository;
+    private MongoVehicleRepository vehicleRepository;
 
     @BeforeEach
     public void setUp() {
         rentRepository = new RentRepository();
         clientRepository = new ClientRepository();
-        vehicleRepository = new VehicleRepository();
+        vehicleRepository = new MongoVehicleRepository();
     }
 
     @AfterEach

@@ -1,12 +1,12 @@
 package com.rental.manager;
 
 import com.rental.model.Vehicle;
-import com.rental.repository.VehicleRepository;
+import com.rental.repository.MongoVehicleRepository;
 
 public class VehicleManager {
-    private final VehicleRepository vehicleRepository;
+    private final MongoVehicleRepository vehicleRepository;
 
-    public VehicleManager(VehicleRepository vehicleRepository) {
+    public VehicleManager(MongoVehicleRepository vehicleRepository) {
         if (vehicleRepository == null) {
             throw new NullPointerException("vehicleRepository is null");
         }

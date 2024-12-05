@@ -11,11 +11,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class VehicleRepositoryTest {
 
-    private VehicleRepository vehicleRepository;
+    private MongoVehicleRepository vehicleRepository;
 
     @BeforeEach
     public void setup() {
-        vehicleRepository = new VehicleRepository();
+        vehicleRepository = new MongoVehicleRepository();
     }
 
     @AfterEach
