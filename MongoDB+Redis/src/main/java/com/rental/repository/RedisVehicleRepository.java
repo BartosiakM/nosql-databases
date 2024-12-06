@@ -13,18 +13,19 @@ public class RedisVehicleRepository extends AbstractRedisRepository implements I
     private static final String VEHICLE_KEY_PREFIX = "vehicle:";
     private static final Jsonb jsonb = JsonbBuilder.create();
 
+    public RedisVehicleRepository() {
+        this.initDbConnection();
+    }
+
     @Override
     public Vehicle add(Vehicle vehicle) {
         try {
             String key = VEHICLE_KEY_PREFIX + vehicle.getId();
 
-            // Serializacja obiektu do JSON-B
             String json = jsonb.toJson(vehicle);
 
-            // Zapis JSON do Redisa
             pool.set(key, json);
 
-            // Ustawienie TTL (opcjonalne)
             pool.expire(key, 3600);
 
             return vehicle;
@@ -39,14 +40,10 @@ public class RedisVehicleRepository extends AbstractRedisRepository implements I
         try {
             String key = VEHICLE_KEY_PREFIX + id;
 
-            // Pobranie JSON z Redisa
             String json = pool.get(key);
             if (json == null) {
-                System.out.println("Vehicle not found in Redis");
                 return null;
             }
-
-            // Deserializacja JSON na obiekt Vehicle
             return jsonb.fromJson(json, Vehicle.class);
         } catch (Exception e) {
             e.printStackTrace();
@@ -80,11 +77,9 @@ public class RedisVehicleRepository extends AbstractRedisRepository implements I
                 throw new RuntimeException("Vehicle does not exist in Redis");
             }
 
-            // Serializacja obiektu do JSON i zapis w Redis
             String json = jsonb.toJson(vehicle);
             pool.set(key, json);
 
-            // Opcjonalne: przedłuż TTL
             pool.expire(key, 3600);
         } catch (Exception e) {
             e.printStackTrace();

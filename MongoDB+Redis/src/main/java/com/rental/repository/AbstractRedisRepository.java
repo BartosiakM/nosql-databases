@@ -24,12 +24,20 @@ public abstract class AbstractRedisRepository implements AutoCloseable {
             JedisClientConfig clientConfig = DefaultJedisClientConfig.builder().build();
             pool = new JedisPooled(new HostAndPort(host, port), clientConfig);
 
-            System.out.println("Redis connection initialized: " + host + ":" + port);
+
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to load Redis properties", e);
         }
     }
+
+    public void clearCache() {
+        if (pool == null) {
+            initDbConnection();
+        }
+        pool.flushAll();
+    }
+
     @Override
     public void close() {
         if (pool != null) {

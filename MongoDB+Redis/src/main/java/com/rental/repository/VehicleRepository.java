@@ -4,14 +4,14 @@ import com.rental.model.Vehicle;
 
 import java.util.List;
 
-public class VehicleRepository {
+public class VehicleRepository  implements IRepository{
 
     private final RedisVehicleRepository redisRepository;
     private final MongoVehicleRepository mongoRepository;
 
-    public VehicleRepository() {
-        this.redisRepository = new RedisVehicleRepository();
-        this.mongoRepository = new MongoVehicleRepository();
+    public VehicleRepository(RedisVehicleRepository redisRepository, MongoVehicleRepository mongoRepository) {
+        this.redisRepository = redisRepository;
+        this.mongoRepository = mongoRepository;
     }
 
     public Vehicle add(Vehicle vehicle) {
@@ -33,13 +33,12 @@ public class VehicleRepository {
     }
 
     public List<Vehicle> findAll() {
-        List<Vehicle> vehicles = redisRepository.findAll();
-        if (!vehicles.isEmpty()) {
-            return vehicles;
-        }
-        vehicles = mongoRepository.findAll();
+        List<Vehicle> vehicles = mongoRepository.findAll();
         for (Vehicle vehicle : vehicles) {
-            redisRepository.add(vehicle);
+           Vehicle redisVehicle = redisRepository.findById(vehicle.getId());
+           if (redisVehicle == null) {
+               redisRepository.add(vehicle);
+           }
         }
         return vehicles;
     }
@@ -52,5 +51,10 @@ public class VehicleRepository {
     public void delete(long id) {
         mongoRepository.delete(id);
         redisRepository.delete(id);
+    }
+
+    public void deleteAll() {
+        mongoRepository.getDatabase().getCollection("vehicles").deleteMany(new org.bson.Document());
+        redisRepository.clearCache();
     }
 }

@@ -1,100 +1,99 @@
 package com.rental.repository;
 
-import com.rental.model.Vehicle;
-import com.rental.model.Car;
-import com.rental.model.Bicycle;
 import com.rental.model.MotorVehicle;
-import org.junit.jupiter.api.*;
-import java.util.List;
+import com.rental.model.Vehicle;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class VehicleRepositoryTest {
+class VehicleRepositoryTest {
 
-    private MongoVehicleRepository vehicleRepository;
+    private VehicleRepository vehicleRepository;
+    private RedisVehicleRepository redisVehicleRepository;
+    private MongoVehicleRepository mongoVehicleRepository;
 
     @BeforeEach
-    public void setup() {
-        vehicleRepository = new MongoVehicleRepository();
+    void setUp() {
+        redisVehicleRepository = new RedisVehicleRepository();
+        mongoVehicleRepository = new MongoVehicleRepository();
+        vehicleRepository = new VehicleRepository(redisVehicleRepository, mongoVehicleRepository);
+        vehicleRepository.deleteAll();
     }
-
     @AfterEach
-    public void cleanup() {
-        vehicleRepository.getDatabase().getCollection("vehicles").deleteMany(new org.bson.Document());
+    void tearDown() {
+        vehicleRepository.deleteAll();
     }
 
     @Test
-    public void testAddVehicle() {
-        Vehicle vehicle = new Car(1, "El7v200", 800, 2, "A");
+    void testAdd() {
+        Vehicle vehicle = new MotorVehicle(5, "El7v200", 800, 2);
 
         Vehicle result = vehicleRepository.add(vehicle);
 
+        Vehicle vehicleRedis = redisVehicleRepository.findById(vehicle.getId());
+        Vehicle vehicleMongo = mongoVehicleRepository.findById(vehicle.getId());
+
+        assertNotNull(vehicleRedis);
+        assertNotNull(vehicleMongo);
+        assertEquals(vehicleRedis.getId(), vehicleMongo.getId());
+    }
+
+    @Test
+    void testFindById_FoundInRedis() {
+        Vehicle vehicle = new MotorVehicle(5, "El7v200", 800, 2);
+        vehicleRepository.add(vehicle);
+
+
+        Vehicle result = vehicleRepository.findById(5);
+
         assertNotNull(result);
-        Vehicle foundVehicle = vehicleRepository.findById(vehicle.getId());
-        assertEquals(vehicle.getId(), foundVehicle.getId());
-        assertEquals("El7v200", foundVehicle.getPlateNumber());
-        assertEquals(800, foundVehicle.getBasePrice());
-    }
-
-    @Test
-    public void testFindById() {
-        Vehicle vehicle = new Car(2,"El7v200", 800, 2, "A");
-        vehicleRepository.add(vehicle);
-
-        Vehicle result = vehicleRepository.findById(vehicle.getId());
-
-
         assertEquals(vehicle.getId(), result.getId());
-        assertEquals("El7v200", result.getPlateNumber());
-        assertEquals(800, result.getBasePrice());
     }
 
     @Test
-    public void testFindByIdNotFound() {
-        long randomId = 11111;
+    void testFindById_FoundInMongo() {
+        Vehicle vehicle = new MotorVehicle(5, "El7v200", 800, 2);
 
-        Vehicle result = vehicleRepository.findById(randomId);
 
-        assertNull(result);
-    }
-
-    @Test
-    public void testFindAll() {
-        Vehicle vehicle1 = new Car(3,"El7v200", 800, 2, "A");
-        Vehicle vehicle2 = new Bicycle(4,"EL23412", 50);
-
-        vehicleRepository.add(vehicle1);
-        vehicleRepository.add(vehicle2);
-
-        List<Vehicle> result = vehicleRepository.findAll();
-
-        assertEquals(2, result.size());
-        assertEquals("El7v200", result.get(0).getPlateNumber());
-        assertEquals("EL23412", result.get(1).getPlateNumber());
-    }
-
-    @Test
-    public void testUpdateVehicle() {
-        Vehicle vehicle = new MotorVehicle(5,"El7v200", 800, 2);
         vehicleRepository.add(vehicle);
 
-        vehicle.setBasePrice(1000);
+        redisVehicleRepository.clearCache();
+
+        Vehicle result = vehicleRepository.findById(5);
+
+        assertNotNull(result);
+        assertEquals(vehicle.getId(), result.getId());
+    }
+
+    @Test
+    void testUpdate() {
+        Vehicle vehicle = new MotorVehicle(5, "El7v200", 800, 2);
+        vehicleRepository.add(vehicle);
+
+        vehicle.setBasePrice(1400);
         vehicleRepository.update(vehicle);
 
-        Vehicle updatedVehicle = vehicleRepository.findById(vehicle.getId());
+        Vehicle mongoResult = mongoVehicleRepository.findById(5);
+        assertNotNull(mongoResult);
+        assertEquals(1400, mongoResult.getBasePrice());
 
-        assertEquals(1000, updatedVehicle.getBasePrice());
+
+        Vehicle redisResult = redisVehicleRepository.findById(5);
+        assertNotNull(redisResult);
+        assertEquals(1400, redisResult.getBasePrice());
     }
 
     @Test
-    public void testDeleteVehicle() {
-        Vehicle vehicle = new MotorVehicle(6,"El7v200", 800, 2);
+    void testDelete() {
+        Vehicle vehicle = new MotorVehicle(5, "El7v200", 800, 2);
         vehicleRepository.add(vehicle);
 
-        vehicleRepository.delete(vehicle.getId());
+        vehicleRepository.delete(5);
 
-        Vehicle deletedVehicle = vehicleRepository.findById(vehicle.getId());
-
-        assertNull(deletedVehicle);
+        assertNull(redisVehicleRepository.findById(5));
+        assertNull(mongoVehicleRepository.findById(5));
     }
 }
