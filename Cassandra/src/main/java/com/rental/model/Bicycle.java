@@ -7,7 +7,7 @@ import com.datastax.oss.driver.api.mapper.annotations.Entity;
 @CqlName("vehicle")
 public class Bicycle extends Vehicle {
 
-    public Bicycle(long id,String plateNumber,int basePrice, boolean available) {
+    public Bicycle(String id,String plateNumber,int basePrice, boolean available) {
         super(id, plateNumber, basePrice, available);
         this.discriminator = "bicycle";
     }

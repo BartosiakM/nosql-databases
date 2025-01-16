@@ -15,7 +15,7 @@
 //    }
 //
 //    public Rent rentVehicle(Rent rent) {
-//        if (rentRepository.findById(rent.getId()) != null) {
+//        if (rentRepository.findById(rent.getClientId()) != null) {
 //            throw new IllegalArgumentException("Rent already exists");
 //        }
 //        rentRepository.add(rent);
@@ -23,7 +23,7 @@
 //    }
 //
 //    public void endRent(Rent rent) {
-//        Rent endedRent = rentRepository.findById(rent.getId());
+//        Rent endedRent = rentRepository.findById(rent.getClientId());
 //        endedRent.endRent();
 //        rentRepository.update(endedRent);
 //    }

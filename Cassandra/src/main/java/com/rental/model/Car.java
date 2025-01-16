@@ -7,13 +7,13 @@ import com.datastax.oss.driver.api.mapper.annotations.Entity;
 @CqlName("vehicle")
 public class Car extends Vehicle {
 
-    @CqlName("engineDisplacement")
+    @CqlName("engine_displacement")
     private int engineDisplacement;
 
     @CqlName("segment")
     private String segment;
 
-    public Car(long id, String plateNumber, int basePrice, boolean available, int engineDisplacement,String segment) {
+    public Car(String id, String plateNumber, int basePrice, boolean available, int engineDisplacement,String segment) {
         super(id, plateNumber, basePrice, available);
         this.engineDisplacement = engineDisplacement;
         this.segment = segment;

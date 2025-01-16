@@ -19,6 +19,7 @@ public class CassandraConfig implements AutoCloseable {
 
     public void initSession() {
         session = CqlSession.builder()
+                .addTypeCodecs(new ClientTypeCodec())
                 .addContactPoint(new InetSocketAddress("cassandra1", 9042))
                 .addContactPoint(new InetSocketAddress("cassandra2", 9043))
                 .withLocalDatacenter("dc1")
@@ -26,7 +27,6 @@ public class CassandraConfig implements AutoCloseable {
                 .withKeyspace(CqlIdentifier.fromCql("car_rental"))
                 .build();
 
-        registerCustomCodecs();
 
         CreateKeyspace keyspace = SchemaBuilder.createKeyspace(CqlIdentifier.fromCql("car_rental"))
                 .ifNotExists()
@@ -36,10 +36,7 @@ public class CassandraConfig implements AutoCloseable {
         session.execute(createKeyspace);
     }
 
-    private void registerCustomCodecs() {
-        MutableCodecRegistry codecRegistry = (MutableCodecRegistry) session.getContext().getCodecRegistry();
-        codecRegistry.register(new ClientTypeCodec(codecRegistry.codecFor(String.class)));
-    }
+
 
     public CqlSession getSession() {
         if (session == null) {

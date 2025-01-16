@@ -46,13 +46,13 @@
 //
 //                clientCollection.updateOne(
 //                        session,
-//                        Filters.eq("_id", rent.getClient().getId()),
+//                        Filters.eq("_id", rent.getClient().getClientId()),
 //                        Updates.inc("activeRents", 1)
 //                );
 //
 //                vehicleCollection.updateOne(
 //                        session,
-//                        Filters.eq("_id", rent.getVehicle().getId()),
+//                        Filters.eq("_id", rent.getVehicle().getClientId()),
 //                        Updates.inc("available", 1)
 //                );
 //
@@ -79,7 +79,7 @@
 //            try {
 //                rentCollection.updateOne(
 //                        session,
-//                        eq("_id", rent.getId()),
+//                        eq("_id", rent.getClientId()),
 //                        Updates.combine(
 //                                Updates.set("client",rent.getClient()),
 //                                Updates.set("vehicle",rent.getVehicle()),
@@ -93,13 +93,13 @@
 //                if (rent.getEndTime() != null) {
 //                    clientCollection.updateOne(
 //                            session,
-//                            Filters.eq("_id", rent.getClient().getId()),
+//                            Filters.eq("_id", rent.getClient().getClientId()),
 //                            Updates.inc("activeRents", -1)
 //                    );
 //
 //                    vehicleCollection.updateOne(
 //                            session,
-//                            Filters.eq("_id", rent.getVehicle().getId()),
+//                            Filters.eq("_id", rent.getVehicle().getClientId()),
 //                            Updates.inc("available", -1)
 //                    );
 //                }

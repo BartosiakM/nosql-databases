@@ -28,35 +28,35 @@ public class VehicleProvider {
         if (vehicle instanceof MotorVehicle) {
             MotorVehicle motorVehicle = (MotorVehicle) vehicle;
             insert = QueryBuilder.insertInto("vehicle")
-                    .value("vehicle_id", QueryBuilder.literal(motorVehicle.getId()))
-                    .value("plateNumber", QueryBuilder.literal(motorVehicle.getPlateNumber()))
-                    .value("basePrice", QueryBuilder.literal(motorVehicle.getBasePrice()))
+                    .value("vehicle_id", QueryBuilder.literal(motorVehicle.getVehicleId()))
+                    .value("plate_number", QueryBuilder.literal(motorVehicle.getPlateNumber()))
+                    .value("base_price", QueryBuilder.literal(motorVehicle.getBasePrice()))
                     .value("available", QueryBuilder.literal(motorVehicle.isAvailable()))
                     .value("discriminator", QueryBuilder.literal("motorvehicle"))
-                    .value("engineDisplacement", QueryBuilder.literal(motorVehicle.getEngineDisplacement()));
+                    .value("engine_displacement", QueryBuilder.literal(motorVehicle.getEngineDisplacement()));
         } else if (vehicle instanceof Car) {
             Car car = (Car) vehicle;
             insert = QueryBuilder.insertInto("vehicle")
-                    .value("vehicle_id", QueryBuilder.literal(car.getId()))
-                    .value("plateNumber", QueryBuilder.literal(car.getPlateNumber()))
-                    .value("basePrice", QueryBuilder.literal(car.getBasePrice()))
+                    .value("vehicle_id", QueryBuilder.literal(car.getVehicleId()))
+                    .value("plate_number", QueryBuilder.literal(car.getPlateNumber()))
+                    .value("base_price", QueryBuilder.literal(car.getBasePrice()))
                     .value("available", QueryBuilder.literal(car.isAvailable()))
                     .value("discriminator", QueryBuilder.literal("car"))
-                    .value("engineDisplacement", QueryBuilder.literal(car.getEngineDisplacement()))
+                    .value("engine_displacement", QueryBuilder.literal(car.getEngineDisplacement()))
                     .value("segment", QueryBuilder.literal(car.getSegment()));
         } else if (vehicle instanceof Bicycle) {
             Bicycle bicycle = (Bicycle) vehicle;
             insert = QueryBuilder.insertInto("vehicle")
-                    .value("vehicle_id", QueryBuilder.literal(bicycle.getId()))
-                    .value("plateNumber", QueryBuilder.literal(bicycle.getPlateNumber()))
-                    .value("basePrice", QueryBuilder.literal(bicycle.getBasePrice()))
+                    .value("vehicle_id", QueryBuilder.literal(bicycle.getVehicleId()))
+                    .value("plate_number", QueryBuilder.literal(bicycle.getPlateNumber()))
+                    .value("base_price", QueryBuilder.literal(bicycle.getBasePrice()))
                     .value("available", QueryBuilder.literal(bicycle.isAvailable()))
                     .value("discriminator", QueryBuilder.literal("bicycle"));
         } else if (vehicle instanceof Vehicle) {
             insert = QueryBuilder.insertInto("vehicle")
-                    .value("vehicle_id", QueryBuilder.literal(vehicle.getId()))
-                    .value("plateNumber", QueryBuilder.literal(vehicle.getPlateNumber()))
-                    .value("basePrice", QueryBuilder.literal(vehicle.getBasePrice()))
+                    .value("vehicle_id", QueryBuilder.literal(vehicle.getVehicleId()))
+                    .value("plate_number", QueryBuilder.literal(vehicle.getPlateNumber()))
+                    .value("base_price", QueryBuilder.literal(vehicle.getBasePrice()))
                     .value("available", QueryBuilder.literal(vehicle.isAvailable()))
                     .value("discriminator", QueryBuilder.literal("vehicle"));
         } else {
@@ -67,7 +67,7 @@ public class VehicleProvider {
         return vehicle;
     }
 
-    public Vehicle findById(long vehicleId) {
+    public Vehicle findById(String vehicleId) {
         Select select = QueryBuilder.selectFrom("vehicle")
                 .all()
                 .where(Relation.column("vehicle_id").isEqualTo(QueryBuilder.literal(vehicleId)));
@@ -82,33 +82,33 @@ public class VehicleProvider {
         String discriminator = row.getString("discriminator");
         if ("motorvehicle".equalsIgnoreCase(discriminator)) {
             return new MotorVehicle(
-                    row.getLong("vehicle_id"),
-                    row.getString("plateNumber"),
-                    row.getInt("basePrice"),
-                    row.getInt("engineDisplacement"),
+                    row.getString("vehicle_id"),
+                    row.getString("plate_number"),
+                    row.getInt("base_price"),
+                    row.getInt("engine_displacement"),
                     row.getBoolean("available")
             );
         } else if ("car".equalsIgnoreCase(discriminator)) {
             return new Car(
-                    row.getLong("vehicle_id"),
-                    row.getString("plateNumber"),
-                    row.getInt("basePrice"),
+                    row.getString("vehicle_id"),
+                    row.getString("plate_number"),
+                    row.getInt("base_price"),
                     row.getBoolean("available"),
-                    row.getInt("engineDisplacement"),
+                    row.getInt("engine_displacement"),
                     row.getString("segment")
             );
         } else if ("bicycle".equalsIgnoreCase(discriminator)) {
             return new Bicycle(
-                    row.getLong("vehicle_id"),
-                    row.getString("plateNumber"),
-                    row.getInt("basePrice"),
+                    row.getString("vehicle_id"),
+                    row.getString("plate_number"),
+                    row.getInt("base_price"),
                     row.getBoolean("available")
             );
         } else if ("vehicle".equalsIgnoreCase(discriminator)) {
             return new Vehicle(
-                    row.getLong("vehicle_id"),
-                    row.getString("plateNumber"),
-                    row.getInt("basePrice"),
+                    row.getString("vehicle_id"),
+                    row.getString("plate_number"),
+                    row.getInt("base_price"),
                     row.getBool("available")
             );
         }
@@ -122,33 +122,33 @@ public class VehicleProvider {
         if (vehicle instanceof MotorVehicle) {
             MotorVehicle motorVehicle = (MotorVehicle) vehicle;
             update = QueryBuilder.update("vehicle")
-                    .setColumn("plateNumber", QueryBuilder.literal(motorVehicle.getPlateNumber()))
-                    .setColumn("basePrice", QueryBuilder.literal(motorVehicle.getBasePrice()))
+                    .setColumn("plate_number", QueryBuilder.literal(motorVehicle.getPlateNumber()))
+                    .setColumn("base_price", QueryBuilder.literal(motorVehicle.getBasePrice()))
                     .setColumn("available", QueryBuilder.literal(motorVehicle.isAvailable()))
-                    .setColumn("engineDisplacement", QueryBuilder.literal(motorVehicle.getEngineDisplacement()))
-                    .where(Relation.column("vehicle_id").isEqualTo(QueryBuilder.literal(motorVehicle.getId())));
+                    .setColumn("engine_displacement", QueryBuilder.literal(motorVehicle.getEngineDisplacement()))
+                    .where(Relation.column("vehicle_id").isEqualTo(QueryBuilder.literal(motorVehicle.getVehicleId())));
         } else if (vehicle instanceof Car) {
             Car car = (Car) vehicle;
             update = QueryBuilder.update("vehicle")
-                    .setColumn("plateNumber", QueryBuilder.literal(car.getPlateNumber()))
-                    .setColumn("basePrice", QueryBuilder.literal(car.getBasePrice()))
+                    .setColumn("plate_number", QueryBuilder.literal(car.getPlateNumber()))
+                    .setColumn("base_price", QueryBuilder.literal(car.getBasePrice()))
                     .setColumn("available", QueryBuilder.literal(car.isAvailable()))
-                    .setColumn("engineDisplacement", QueryBuilder.literal(car.getEngineDisplacement()))
+                    .setColumn("engine_displacement", QueryBuilder.literal(car.getEngineDisplacement()))
                     .setColumn("segment", QueryBuilder.literal(car.getSegment()))
-                    .where(Relation.column("vehicle_id").isEqualTo(QueryBuilder.literal(car.getId())));
+                    .where(Relation.column("vehicle_id").isEqualTo(QueryBuilder.literal(car.getVehicleId())));
         } else if (vehicle instanceof Bicycle) {
             Bicycle bicycle = (Bicycle) vehicle;
             update = QueryBuilder.update("vehicle")
-                    .setColumn("plateNumber", QueryBuilder.literal(bicycle.getPlateNumber()))
-                    .setColumn("basePrice", QueryBuilder.literal(bicycle.getBasePrice()))
+                    .setColumn("plate_number", QueryBuilder.literal(bicycle.getPlateNumber()))
+                    .setColumn("base_price", QueryBuilder.literal(bicycle.getBasePrice()))
                     .setColumn("available", QueryBuilder.literal(bicycle.isAvailable()))
-                    .where(Relation.column("vehicle_id").isEqualTo(QueryBuilder.literal(bicycle.getId())));
+                    .where(Relation.column("vehicle_id").isEqualTo(QueryBuilder.literal(bicycle.getVehicleId())));
         } else if (vehicle instanceof Vehicle) {
             update = QueryBuilder.update("vehicle")
-                    .setColumn("plateNumber", QueryBuilder.literal(vehicle.getPlateNumber()))
-                    .setColumn("basePrice", QueryBuilder.literal(vehicle.getBasePrice()))
+                    .setColumn("plate_number", QueryBuilder.literal(vehicle.getPlateNumber()))
+                    .setColumn("base_price", QueryBuilder.literal(vehicle.getBasePrice()))
                     .setColumn("available", QueryBuilder.literal(vehicle.isAvailable()))
-                    .where(Relation.column("vehicle_id").isEqualTo(QueryBuilder.literal(vehicle.getId())));
+                    .where(Relation.column("vehicle_id").isEqualTo(QueryBuilder.literal(vehicle.getVehicleId())));
         } else {
             throw new IllegalArgumentException("Unknown vehicle type: " + vehicle.getClass().getSimpleName());
         }
@@ -156,7 +156,7 @@ public class VehicleProvider {
         session.execute(update.build());
     }
 
-    public void delete(long vehicleId) {
+    public void delete(String vehicleId) {
         Delete delete = QueryBuilder.deleteFrom("vehicle")
                 .where(Relation.column("vehicle_id").isEqualTo(QueryBuilder.literal(vehicleId)));
 

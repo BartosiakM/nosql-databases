@@ -10,7 +10,7 @@ import com.rental.provider.VehicleProvider;
 public interface VehicleDao {
     @StatementAttributes(consistencyLevel = "ONE")
     @QueryProvider(providerClass = VehicleProvider.class, entityHelpers = {Bicycle.class, MotorVehicle.class, Vehicle.class, Car.class})
-    Vehicle findById(long id);
+    Vehicle findById(String id);
 
     @StatementAttributes(consistencyLevel = "QUORUM")
     @QueryProvider(providerClass = VehicleProvider.class, entityHelpers = {Bicycle.class, MotorVehicle.class, Vehicle.class, Car.class})

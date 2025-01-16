@@ -18,7 +18,7 @@ public class VehicleManager {
     }
 
     public Vehicle addVehicle(Vehicle vehicle) {
-        if (vehicleRepository.findById(vehicle.getId()) != null) {
+        if (vehicleRepository.findById(vehicle.getVehicleId()) != null) {
             throw new IllegalArgumentException("vehicle already exists");
         }
         return vehicleRepository.add(vehicle);

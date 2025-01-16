@@ -10,12 +10,12 @@ public class Vehicle {
 
     @PartitionKey
     @CqlName("vehicle_id")
-    private long id;
+    private String vehicleId;
 
-    @CqlName("plateNumber")
+    @CqlName("plate_number")
     private String plateNumber;
 
-    @CqlName("basePrice")
+    @CqlName("base_price")
     private int basePrice;
 
     @CqlName("available")
@@ -24,8 +24,8 @@ public class Vehicle {
     @CqlName("discriminator")
     protected String discriminator;
 
-    public Vehicle(long id, String plateNumber, int basePrice, boolean available) {
-        this.id = id;
+    public Vehicle(String id, String plateNumber, int basePrice, boolean available) {
+        this.vehicleId = id;
         this.plateNumber = plateNumber;
         this.basePrice = basePrice;
         this.discriminator = "vehicle";
@@ -36,12 +36,20 @@ public class Vehicle {
         this.discriminator = "vehicle";
     }
 
-    public long getId() {
-        return this.id;
+    public String getVehicleId() {
+        return this.vehicleId;
+    }
+
+    public void setVehicleId(String id) {
+        this.vehicleId = id;
     }
 
     public String getPlateNumber() {
         return this.plateNumber;
+    }
+
+    public void setPlateNumber(String plateNumber) {
+        this.plateNumber = plateNumber;
     }
 
     public int getBasePrice() {

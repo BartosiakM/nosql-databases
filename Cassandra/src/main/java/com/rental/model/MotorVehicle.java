@@ -8,10 +8,10 @@ import com.datastax.oss.driver.api.mapper.annotations.Entity;
 @CqlName("vehicle")
 public class MotorVehicle extends Vehicle {
 
-    @CqlName("engineDisplacement")
+    @CqlName("engine_displacement")
     private int engineDisplacement;
 
-    public MotorVehicle(long id,String plateNumber,int basePrice, int engineDisplacement, boolean available) {
+    public MotorVehicle(String id,String plateNumber,int basePrice, int engineDisplacement, boolean available) {
         super(id, plateNumber, basePrice,available);
         this.discriminator = "motorVehicle";
         this.engineDisplacement = engineDisplacement;

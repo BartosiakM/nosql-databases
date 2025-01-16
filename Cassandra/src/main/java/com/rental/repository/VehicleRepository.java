@@ -27,7 +27,8 @@ public class VehicleRepository extends CassandraConfig implements IRepository<Ve
     public void createTable() {
         SimpleStatement createVehicles = SchemaBuilder.createTable(CqlIdentifier.fromCql("vehicle"))
                 .ifNotExists()
-                .withPartitionKey(CqlIdentifier.fromCql("vehicle_id"), DataTypes.INT)
+                .withPartitionKey(CqlIdentifier.fromCql("vehicle_id"), DataTypes.TEXT)
+                .withColumn(CqlIdentifier.fromCql("plate_number"), DataTypes.TEXT)
                 .withColumn(CqlIdentifier.fromCql("base_price"), DataTypes.INT)
                 .withColumn(CqlIdentifier.fromCql("available"), DataTypes.BOOLEAN)
                 .withColumn(CqlIdentifier.fromCql("discriminator"), DataTypes.TEXT)
@@ -52,7 +53,7 @@ public class VehicleRepository extends CassandraConfig implements IRepository<Ve
     }
 
     @Override
-    public Vehicle findById(long id) {
+    public Vehicle findById(String id) {
         return vehicleDao.findById(id);
     }
 

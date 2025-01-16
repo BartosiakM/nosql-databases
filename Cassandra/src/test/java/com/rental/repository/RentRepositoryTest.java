@@ -41,7 +41,7 @@
 //
 //        assertNotNull(addedRent);
 //        assertEquals(vehicle.getPlateNumber(), addedRent.getVehicle().getPlateNumber());
-//        assertEquals(1,vehicleRepository.findById(vehicle.getId()).isAvailable());
+//        assertEquals(1,vehicleRepository.findById(vehicle.getClientId()).isAvailable());
 //        assertEquals(client.getUsername(), addedRent.getClient().getUsername());
 //    }
 //
@@ -56,7 +56,7 @@
 //        vehicleRepository.add(vehicle);
 //        rentRepository.add(rent);
 //
-//        Rent foundRent = rentRepository.findById(rent.getId());
+//        Rent foundRent = rentRepository.findById(rent.getClientId());
 //        assertNotNull(foundRent);
 //        assertEquals(vehicle.getPlateNumber(), foundRent.getVehicle().getPlateNumber());
 //        assertEquals(client.getUsername(), foundRent.getClient().getUsername());
@@ -96,9 +96,9 @@
 //        clientRepository.add(client);
 //        vehicleRepository.add(vehicle);
 //        rentRepository.add(rent);
-//        rentRepository.delete(rent.getId());
+//        rentRepository.delete(rent.getClientId());
 //
-//        Rent removedRent = rentRepository.findById(rent.getId());
+//        Rent removedRent = rentRepository.findById(rent.getClientId());
 //        assertNull(removedRent, "Rent should be removed from the database.");
 //    }
 //
@@ -118,8 +118,8 @@
 //        });
 //
 //
-//        assertEquals(clientRepository.findById(client.getId()).getActiveRents(),0);
-//        assertEquals(vehicleRepository.findById(vehicle.getId()).isAvailable(),1);
+//        assertEquals(clientRepository.findById(client.getClientId()).getActiveRents(),0);
+//        assertEquals(vehicleRepository.findById(vehicle.getClientId()).isAvailable(),1);
 //    }
 //
 //    @Test
@@ -137,8 +137,8 @@
 //            rentRepository.add(rent);
 //        });
 //
-//        assertEquals(clientRepository.findById(client.getId()).getActiveRents(),10);
-//        assertNotEquals(vehicleRepository.findById(vehicle.getId()).isAvailable(),1);
+//        assertEquals(clientRepository.findById(client.getClientId()).getActiveRents(),10);
+//        assertNotEquals(vehicleRepository.findById(vehicle.getClientId()).isAvailable(),1);
 //
 //    }
 //
@@ -157,7 +157,7 @@
 //
 //        rentRepository.update(addedRent);
 //
-//        assertEquals(vehicleRepository.findById(vehicle.getId()).isAvailable(),0);
-//        assertEquals(clientRepository.findById(client.getId()).getActiveRents(),0);
+//        assertEquals(vehicleRepository.findById(vehicle.getClientId()).isAvailable(),0);
+//        assertEquals(clientRepository.findById(client.getClientId()).getActiveRents(),0);
 //    }
 //}

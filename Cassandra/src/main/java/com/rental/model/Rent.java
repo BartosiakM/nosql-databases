@@ -44,7 +44,7 @@
 //        return vehicle;
 //    }
 //
-//    public long getId() {
+//    public long getClientId() {
 //        return this.id;
 //    }
 //

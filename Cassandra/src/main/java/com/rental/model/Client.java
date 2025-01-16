@@ -5,24 +5,25 @@ import com.datastax.oss.driver.api.mapper.annotations.Entity;
 import com.datastax.oss.driver.api.mapper.annotations.PartitionKey;
 
 @Entity(defaultKeyspace = "car_rental")
+@CqlName("clients")
 public class Client {
 
     @PartitionKey
     @CqlName("client_id")
-    private long id;
+    private String clientId;
 
     @CqlName("username")
     private String username;
 
-    @CqlName("type")
+    @CqlName("client_type")
     private ClientType clientType;
 
     @CqlName("activeRents")
     private int activeRents;
 
 
-    public Client(long id, String username, ClientType clientType) {
-        this.id = id;
+    public Client(String id, String username, ClientType clientType) {
+        this.clientId = id;
         this.username = username;
         this.clientType = clientType;
         this.activeRents = 0;
@@ -30,9 +31,15 @@ public class Client {
 
     public Client() {}
 
+
     public ClientType getClientType() {
-        return clientType;
+        return this.clientType;
     }
+
+    public void setClientType(ClientType clientType) {
+        this.clientType = clientType;
+    }
+
 
     public int getActiveRents() {
         return activeRents;
@@ -50,15 +57,18 @@ public class Client {
         this.username = username;
     }
 
-    public long getId() {
-        return this.id;
+    public String getClientId() {
+        return this.clientId;
+    }
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
     }
 
     public int getMaxVehicles() {
-        return clientType.getMaxVehicles();
+        return getClientType().getMaxVehicles();
     }
 
     public double applyDiscount(double price) {
-        return clientType.applyDiscount(price);
+        return getClientType().applyDiscount(price);
     }
 }

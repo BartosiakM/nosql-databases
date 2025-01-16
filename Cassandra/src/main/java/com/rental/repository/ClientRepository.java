@@ -14,7 +14,7 @@ public class ClientRepository extends CassandraConfig implements IRepository<Cli
 
     private final CqlSession session;
     private final ClientMapper clientMapper;
-    private final ClientDao clientDao;;
+    private final ClientDao clientDao;
 
     public ClientRepository(CqlSession session) {
         this.session = session;
@@ -26,10 +26,10 @@ public class ClientRepository extends CassandraConfig implements IRepository<Cli
     public void createTable() {
         SimpleStatement createClients = SchemaBuilder.createTable(CqlIdentifier.fromCql("clients"))
                 .ifNotExists()
-                .withPartitionKey(CqlIdentifier.fromCql("client_id"), DataTypes.BIGINT)
-                .withClusteringColumn(CqlIdentifier.fromCql("type"), DataTypes.TEXT)
-                .withColumn("username", DataTypes.TEXT)
-                .withColumn("activeRents", DataTypes.INT)
+                .withPartitionKey(CqlIdentifier.fromCql("client_id"), DataTypes.TEXT)
+                .withColumn(CqlIdentifier.fromCql("client_type"), DataTypes.TEXT)
+                .withColumn(CqlIdentifier.fromCql("username"), DataTypes.TEXT)
+                .withColumn( CqlIdentifier.fromCql("activeRents"), DataTypes.INT)
                 .build();
         session.execute(createClients);
     }
@@ -39,7 +39,7 @@ public class ClientRepository extends CassandraConfig implements IRepository<Cli
                 .ifExists()
                 .build();
 
-        getSession().execute(dropClients);
+        session.execute(dropClients);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class ClientRepository extends CassandraConfig implements IRepository<Cli
     }
 
     @Override
-    public Client findById(long id) {
+    public Client findById(String id) {
         return clientDao.findById(id);
     }
 

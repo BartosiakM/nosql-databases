@@ -20,7 +20,7 @@ public class ClientManager implements Serializable {
     }
 
     public Client addClient(Client client) {
-        if (clientRepository.findById(client.getId()) != null) {
+        if (clientRepository.findById(client.getClientId()) != null) {
             throw new IllegalArgumentException("Client already exists");
         }
         return clientRepository.add(client);
