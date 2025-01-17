@@ -28,15 +28,15 @@ public class RentProvider {
     private final CqlSession session;
     private final LocalDateTimeCodec timeCodec = new LocalDateTimeCodec();
 
-    public static final CqlIdentifier RENTS_BY_CLIENT = CqlIdentifier.fromCql("rents_by_client");
-    public static final CqlIdentifier RENTS_BY_VEHICLE = CqlIdentifier.fromCql("rents_by_vehicle");
+    public static final CqlIdentifier RENTS_BY_CLIENT = CqlIdentifier.fromCql("rent_by_client");
+    public static final CqlIdentifier RENTS_BY_VEHICLE = CqlIdentifier.fromCql("rent_by_vehicle");
 
     public RentProvider(MapperContext context) {
         this.session = context.getSession();
     }
 
     public Rent add(Rent rent) {
-
+        verifyRent(rent);
         Insert insertClient = QueryBuilder.insertInto(RENTS_BY_CLIENT)
                 .value("rent_id", QueryBuilder.literal(rent.getRentId()))
                 .value("client_id", QueryBuilder.literal(rent.getClientId()))
@@ -49,12 +49,12 @@ public class RentProvider {
 
         Insert insertVehicle = QueryBuilder.insertInto(RENTS_BY_VEHICLE)
                 .value("rent_id", QueryBuilder.literal(rent.getRentId()))
-                .value("personal_id", QueryBuilder.literal(rent.getClientId()))
-                .value("plate_number", QueryBuilder.literal(rent.getVehicleId()))
+                .value("client_id", QueryBuilder.literal(rent.getClientId()))
+                .value("vehicle_id", QueryBuilder.literal(rent.getVehicleId()))
                 .value("begin_time", QueryBuilder.literal(rent.getBeginTime(), timeCodec))
                 .value("end_time", QueryBuilder.literal(rent.getEndTime(), timeCodec))
                 .value("rent_cost", QueryBuilder.literal(rent.getRentCost()))
-                .value("archived", QueryBuilder.literal(rent.isArchive()))
+                .value("archive", QueryBuilder.literal(rent.isArchive()))
                 .ifNotExists();
 
         session.execute(insertClient.build());
@@ -84,7 +84,7 @@ public class RentProvider {
                 .setColumn("begin_time", QueryBuilder.literal(rent.getBeginTime(), timeCodec))
                 .setColumn("end_time", QueryBuilder.literal(rent.getEndTime(), timeCodec))
                 .setColumn("rent_cost", QueryBuilder.literal(rent.getRentCost()))
-                .setColumn("archived", QueryBuilder.literal(rent.isArchive()))
+                .setColumn("archive", QueryBuilder.literal(rent.isArchive()))
                 .where(Relation.column("rent_id").isEqualTo(QueryBuilder.literal(rent.getRentId())))
                 .where(Relation.column("client_id").isEqualTo(QueryBuilder.literal(rent.getClientId())));
 
@@ -94,14 +94,11 @@ public class RentProvider {
                 .setColumn("rent_cost", QueryBuilder.literal(rent.getRentCost()))
                 .setColumn("archive", QueryBuilder.literal(rent.isArchive()))
                 .where(Relation.column("rent_id").isEqualTo(QueryBuilder.literal(rent.getRentId())))
-                .where(Relation.column("plate_number").isEqualTo(QueryBuilder.literal(rent.getVehicleId())));
+                .where(Relation.column("vehicle_id").isEqualTo(QueryBuilder.literal(rent.getVehicleId())));
 
-        BatchStatement batch = BatchStatement.builder(BatchType.LOGGED)
-                .addStatement(updateClient.build())
-                .addStatement(updateVehicle.build())
-                .build();
 
-        session.execute(batch);
+        session.execute(updateClient.build());
+        session.execute(updateVehicle.build());
     }
 
     public void delete(Rent rent) {
@@ -111,14 +108,12 @@ public class RentProvider {
 
         Delete deleteVehicle = QueryBuilder.deleteFrom(RENTS_BY_VEHICLE)
                 .where(Relation.column("rent_id").isEqualTo(QueryBuilder.literal(rent.getRentId())))
-                .where(Relation.column("vehicleId").isEqualTo(QueryBuilder.literal(rent.getVehicleId())));
+                .where(Relation.column("vehicle_id").isEqualTo(QueryBuilder.literal(rent.getVehicleId())));
 
-        BatchStatement batch = BatchStatement.builder(BatchType.LOGGED)
-                .addStatement(deleteClient.build())
-                .addStatement(deleteVehicle.build())
-                .build();
 
-        session.execute(batch);
+        session.execute(deleteVehicle.build());
+        session.execute(deleteClient.build());
+
     }
 
     private List<Rent> mapResultSetToRents(List<Row> rows) {
@@ -135,10 +130,20 @@ public class RentProvider {
                     beginTime,
                     endTime,
                     row.getDouble(CqlIdentifier.fromCql("rent_cost")),
-                    row.getBoolean(CqlIdentifier.fromCql("archived"))
+                    row.getBoolean(CqlIdentifier.fromCql("archive"))
             );
             rents.add(rent);
         }
         return rents;
+    }
+
+    private void verifyRent(Rent rent) {
+        if (findByClientId(rent.getClientId()).stream().filter(r -> r.getEndTime() == null).count() >= rent.getClient().getClientType().getMaxVehicles()) {
+            throw new IllegalStateException("Client reached maximum number of rents");
+        }
+
+        if (findByVehicleId(rent.getVehicleId()).stream().anyMatch(r -> r.getEndTime() == null)) {
+            throw new IllegalStateException("Vehicle is already rented");
+        }
     }
 }

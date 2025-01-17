@@ -31,6 +31,18 @@ public class Rent {
         this.vehicleId = vehicle.getVehicleId();
     }
 
+    public Rent(String id, Client client, Vehicle vehicle, LocalDateTime beginTime, LocalDateTime endTime, double rentCost, boolean archive) {
+        this.rentId = id;
+        this.client = client;
+        this.vehicle = vehicle;
+        this.beginTime = beginTime;
+        this.endTime = endTime;
+        this.rentCost = rentCost;
+        this.archive = archive;
+        this.clientId = client.getClientId();
+        this.vehicleId = vehicle.getVehicleId();
+    }
+
     public Rent(String id, String clientId, String vehicleId) {
         this.rentId = id;
         this.clientId = clientId;
@@ -109,4 +121,8 @@ public class Rent {
     }
 
     public boolean isArchive() { return archive; }
+
+    public void setArchive(boolean archive) { this.archive = archive; }
+
+    public void setRentCost(double rentCost) { this.rentCost = rentCost; }
 }
