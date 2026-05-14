@@ -1,45 +1,55 @@
 package com.rental.model;
-import com.sun.istack.NotNull;
+
+import jakarta.validation.constraints.NotNull;
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
-
-
-import java.util.UUID;
+import java.io.Serializable;
 
 @Entity
-@Valid
 @Table(name = "Client")
 @Access(AccessType.FIELD)
-public class Client extends AbstractEntity {
-    @Id
-    @GeneratedValue
-    @Column(name = "Client_ID")
-    private UUID ID;
+public class Client extends AbstractEntity implements Serializable {
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "username")
     @NotNull
     private String username;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "Address_ID")
-    private Address address;
-
     @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "ClientType_ID")
+    @JoinColumn(name = "client_type_id", referencedColumnName = "id")
     private ClientType clientType;
 
     @Column
     private int activeRents;
 
-    public Client(String username, ClientType clientType, Address address) {
+    public Client(String username, ClientType clientType) {
         this.username = username;
         this.clientType = clientType;
-        this.address = address;
         this.activeRents = 0;
     }
 
-    public Client() {
+    public Client() {}
 
+    public ClientType getClientType() {
+        return clientType;
+    }
+
+    public int getActiveRents() {
+        return activeRents;
+    }
+
+    public void setActiveRents(int activeRents) {
+        this.activeRents = activeRents;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public Long getClientId() {
+        return this.id;
     }
 
     public int getMaxVehicles() {
@@ -49,5 +59,4 @@ public class Client extends AbstractEntity {
     public double applyDiscount(double price) {
         return clientType.applyDiscount(price);
     }
-
 }

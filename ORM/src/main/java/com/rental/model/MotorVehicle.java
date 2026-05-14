@@ -1,11 +1,22 @@
 package com.rental.model;
 
-public abstract class MotorVehicle extends Vehicle {
+import jakarta.persistence.*;
+
+@Entity
+@Access(AccessType.FIELD)
+@DiscriminatorValue("MotorVehicle")
+public class MotorVehicle extends Vehicle {
+
+    @Column(name="engine_displacement")
     private int engineDisplacement;
 
     public MotorVehicle(String plateNumber, int basePrice, int engineDisplacement) {
         super(plateNumber, basePrice);
         this.engineDisplacement = engineDisplacement;
+    }
+
+    public MotorVehicle() {
+        super("", 0);
     }
 
     public int getEngineDisplacement() {
@@ -25,10 +36,5 @@ public abstract class MotorVehicle extends Vehicle {
             rentalPrice *= (engineDisplacement * 0.5) / 1000.0 + 0.5;
         }
         return rentalPrice;
-    }
-
-    @Override
-    public String getVehicleInfo() {
-        return super.getVehicleInfo() + " " + engineDisplacement;
     }
 }

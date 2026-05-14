@@ -1,28 +1,37 @@
 package com.rental.model;
 
-public abstract class Vehicle {
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import java.io.Serializable;
+
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Access(AccessType.FIELD)
+public abstract class Vehicle extends AbstractEntity implements Serializable {
+
+    @Column(name = "plateNumber")
+    @NotNull
     private String plateNumber;
+
+    @Column(name = "basePrice")
     private int basePrice;
-    private boolean archive;
+
+    @Column(name = "available")
+    private boolean available = true;
 
     public Vehicle(String plateNumber, int basePrice) {
-        if (plateNumber == null || plateNumber.isEmpty()) {
-            throw new IllegalArgumentException("Plate number must be provided");
-        }
         this.plateNumber = plateNumber;
         this.basePrice = basePrice;
-        this.archive = false;
+    }
+
+    public Vehicle() {}
+
+    public Long getVehicleId() {
+        return this.id;
     }
 
     public String getPlateNumber() {
-        return plateNumber;
-    }
-
-    public void setPlateNumber(String plateNumber) {
-        if (plateNumber == null || plateNumber.isEmpty()) {
-            throw new IllegalArgumentException("Plate number must be provided");
-        }
-        this.plateNumber = plateNumber;
+        return this.plateNumber;
     }
 
     public int getBasePrice() {
@@ -35,15 +44,11 @@ public abstract class Vehicle {
 
     public abstract double getActualRentalPrice();
 
-    public String getVehicleInfo() {
-        return plateNumber + " " + basePrice;
+    public boolean isAvailable() {
+        return available;
     }
 
-    public boolean isArchived() {
-        return archive;
-    }
-
-    public void setArchive(boolean archive) {
-        this.archive = archive;
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 }
